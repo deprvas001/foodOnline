@@ -51,7 +51,9 @@ def registerUser(request):
             user.save()
             
             # Send verification mail
-            send_verification_email(request, user)
+            mail_subject = 'Please activate your account'
+            email_template = 'accounts/emails/account_verification_email.html'
+            send_verification_email(request, user,mail_subject, email_template)
             messages.error(request, "Your account has been registered successfully")
             return redirect('registerUser')
         else:
@@ -89,8 +91,10 @@ def registerVendor(request):
             vendor.save()
 
              # Send verification mail
-            send_verification_email(request, user)
-
+            mail_subject = 'Please activate your account'
+            email_template = 'accounts/emails/account_verification_email.html'
+            send_verification_email(request, user, mail_subject, email_template)
+        
             messages.success(request, "Your account has been registered successfully!. Please wait for the approval.")
             return redirect('registerVendor')
 
@@ -164,4 +168,30 @@ def activate(request, uidb64, token):
     else:
         messages.error(request, 'Invalid activation link')
         return redirect('myAccount')
+
+def forgot_password(request):
+    if request.method == 'POST':
+        email = request.POST["email"]
+
+        if User.objects.filter(email=email).exists():
+            user = User.objects.get(email__exact=email)
+
+            # Send reset password email
+            mail_subject = 'Reset Your Password'
+            email_template = 'accounts/emails/reset_password_email.html'
+            send_verification_email(request, user, mail_subject, email_template)
+
+            messages.success(request, "Password reset link has been sent to your email address.")
+            return redirect('login')
+        else:
+            messages.error(request, "Account does not exist")
+            return redirect('forgot_password')
+
+    return render(request, 'accounts/forgot_password.html')
+
+def reset_password_validate(request, uidb64, token):
+    return 
+
+def reset_password(request):
+    return render(request, 'accounts/reset_password.html')
 
