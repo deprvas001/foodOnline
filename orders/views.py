@@ -34,7 +34,7 @@ def place_order(request):
     total_data = {}
     k = {}
     for i in cart_items:
-        fooditem = FoodItem.objects.get(pk=i.fooditem.id, vendor_id_in=vendors_ids)
+        fooditem = FoodItem.objects.get(pk=i.fooditem.id, vendor_id__in=vendors_ids)
         v_id = fooditem.vendor.id
         if v_id in k:
             subtotal = k[v_id]
